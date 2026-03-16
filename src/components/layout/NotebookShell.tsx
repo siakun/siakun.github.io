@@ -8,6 +8,7 @@ import ProfileSidebar from '@/components/layout/ProfileSidebar';
 import ProfileMobile from '@/components/layout/ProfileMobile';
 import HashRedirect from '@/components/common/HashRedirect';
 import ScrollDownHint from '@/components/common/ScrollDownHint';
+import ViewParamModal from '@/components/common/ViewParamModal';
 
 interface NotebookShellProps {
   children: React.ReactNode;
@@ -30,6 +31,7 @@ const NotebookShell = ({ children }: NotebookShellProps) => {
   return (
     <div className="flex h-screen items-stretch justify-center">
       <HashRedirect />
+      <ViewParamModal />
       {/* 노트북 전체 컨테이너 */}
       <div
         onWheel={handleOuterWheel}

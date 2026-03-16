@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, type ReactNode } from 'react';
+import { useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 interface ImageModalProps {
@@ -9,11 +9,51 @@ interface ImageModalProps {
   children: ReactNode;
 }
 
+// /certificates/[2025-08] Google AI Essentials.pdf → [2025-08] Google AI Essentials.pdf
+const getFilename = (src: string) => {
+  const parts = src.split('/');
+  return decodeURIComponent(parts[parts.length - 1]);
+};
+
 const ImageModal = ({ src, alt, children }: ImageModalProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const openMethodRef = useRef<'click' | null>(null);
 
-  const close = useCallback(() => setIsOpen(false), []);
+  const filename = getFilename(src);
 
+  const close = useCallback(() => {
+    setIsOpen(false);
+    const method = openMethodRef.current;
+    openMethodRef.current = null;
+
+    if (method === 'click') {
+      window.history.back();
+    }
+  }, []);
+
+  const open = useCallback(() => {
+    openMethodRef.current = 'click';
+    setIsOpen(true);
+    const url = new URL(window.location.href);
+    url.searchParams.set('view', filename);
+    window.history.pushState(null, '', url.toString());
+  }, [filename]);
+
+  // 브라우저 뒤로가기/앞으로가기
+  useEffect(() => {
+    if (!isOpen) return;
+    const onPopState = () => {
+      const viewParam = new URLSearchParams(window.location.search).get('view');
+      if (viewParam !== filename) {
+        openMethodRef.current = null;
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [isOpen, filename]);
+
+  // ESC 키
   useEffect(() => {
     if (!isOpen) return;
     const onKey = (e: KeyboardEvent) => {
@@ -27,7 +67,7 @@ const ImageModal = ({ src, alt, children }: ImageModalProps) => {
     <>
       <button
         type="button"
-        onClick={() => setIsOpen(true)}
+        onClick={open}
         className="cursor-pointer underline underline-offset-2 transition-opacity hover:opacity-75"
         style={{ color: 'inherit', background: 'none', border: 'none', padding: 0, font: 'inherit' }}
       >
