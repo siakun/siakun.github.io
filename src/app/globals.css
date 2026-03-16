@@ -55,6 +55,7 @@
 @property --callout-warning-bg { syntax: '<color>'; inherits: true; initial-value: rgba(232, 160, 76, 0.1); }
 @property --callout-important-bg { syntax: '<color>'; inherits: true; initial-value: rgba(212, 114, 106, 0.1); }
 @property --blockquote-bg { syntax: '<color>'; inherits: true; initial-value: rgba(196, 138, 32, 0.06); }
+@property --link-color { syntax: '<color>'; inherits: true; initial-value: #4a7ab5; }
 @property --modal-bg { syntax: '<color>'; inherits: true; initial-value: rgba(0, 0, 0, 0.7); }
 
 :root {
@@ -114,6 +115,7 @@
     --scrollbar-track var(--theme-td) ease,
     --scrollbar-thumb var(--theme-td) ease,
     --scrollbar-thumb-hover var(--theme-td) ease,
+    --link-color var(--theme-td) ease,
     --modal-bg var(--theme-td) ease;
   --paper: #fdfcfa;
   --paper-line: #f0ebe4;
@@ -179,6 +181,9 @@
   /* 기타 마크다운 */
   --hr-color: #b0a8a0;
   --blockquote-bg: rgba(196, 138, 32, 0.06);
+
+  /* 링크 */
+  --link-color: #4a7ab5;
 
   /* 그림자 */
   --shadow-notebook: 0 4px 30px rgba(0,0,0,0.12);
@@ -258,6 +263,9 @@
   /* 기타 마크다운 */
   --hr-color: #30363d;
   --blockquote-bg: rgba(88, 166, 255, 0.1);
+
+  /* 링크 */
+  --link-color: #58a6ff;
 
   /* 그림자 */
   --shadow-notebook: 0 4px 30px rgba(0,0,0,0.5);

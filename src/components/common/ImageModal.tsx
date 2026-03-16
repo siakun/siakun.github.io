@@ -41,13 +41,23 @@ const ImageModal = ({ src, alt, children }: ImageModalProps) => {
             style={{ backgroundColor: 'var(--modal-bg)' }}
             onClick={close}
           >
-            <img
-              src={src}
-              alt={alt || ''}
-              className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
-              style={{ boxShadow: 'var(--modal-shadow)' }}
-              onClick={(e) => e.stopPropagation()}
-            />
+            {/\.pdf$/i.test(src) ? (
+              <iframe
+                src={src}
+                title={alt || ''}
+                className="h-[90vh] w-[90vw] max-w-4xl rounded-lg"
+                style={{ boxShadow: 'var(--modal-shadow)', backgroundColor: '#fff' }}
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <img
+                src={src}
+                alt={alt || ''}
+                className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
+                style={{ boxShadow: 'var(--modal-shadow)' }}
+                onClick={(e) => e.stopPropagation()}
+              />
+            )}
           </div>,
           document.body,
         )}

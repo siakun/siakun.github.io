@@ -128,7 +128,7 @@ const MarkdownSection = ({ content, accentColor }: MarkdownSectionProps) => {
     // --- Links ---
     a: ({ href, children }) => {
       // 이미지 확장자 링크 → 모달로 표시
-      if (href && /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(href)) {
+      if (href && /\.(jpg|jpeg|png|webp|gif|svg|pdf)$/i.test(href)) {
         return (
           <ImageModal src={href} alt={typeof children === 'string' ? children : ''}>
             {children}
@@ -141,7 +141,7 @@ const MarkdownSection = ({ content, accentColor }: MarkdownSectionProps) => {
           target="_blank"
           rel="noopener noreferrer"
           className="text-[15px] underline underline-offset-2 transition-opacity hover:opacity-75"
-          style={{ color: accentColor }}
+          style={{ color: 'var(--link-color)' }}
         >
           {children}
         </a>
