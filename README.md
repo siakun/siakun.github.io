@@ -1,4 +1,4 @@
-# Sia819.github.io
+# siakun.github.io
 
 개인 포트폴리오 & 블로그 사이트.
 
@@ -40,7 +40,7 @@ out/ 내용물이 GitHub Pages 아티팩트로 업로드
   ↓
 GitHub Pages CDN이 아티팩트를 서빙
   ↓
-https://sia819.github.io 에 반영 완료
+https://siakun.github.io 에 반영 완료
 ```
 
 **핵심 포인트:**
@@ -65,7 +65,7 @@ npm run build         # out/ 디렉터리에 정적 파일 생성
 npx serve out         # out/ 디렉터리를 로컬 웹서버로 서빙
 ```
 
-이렇게 하면 실제 `https://sia819.github.io`와 동일한 결과를 로컬에서 확인할 수 있음.
+이렇게 하면 실제 `https://siakun.github.io`와 동일한 결과를 로컬에서 확인할 수 있음.
 
 ### 개발 서버 vs 빌드 미리보기 차이
 

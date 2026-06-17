@@ -1,8 +1,8 @@
-# CLAUDE.md - Sia819.github.io
+# CLAUDE.md - siakun.github.io
 
 ## 프로젝트 개요
 
-Sia819의 개인 포트폴리오 + 블로그 사이트. GitHub Pages로 정적 배포된다.
+siakun의 개인 포트폴리오 + 블로그 사이트. GitHub Pages로 정적 배포된다.
 
 ## 기술 스택
 

@@ -21,7 +21,7 @@ export const profile: Profile = {
   email: 'lunasia819@gmail.com',
   location: 'Seoul, South Korea',
   links: [
-    { label: 'GitHub', url: 'https://github.com/Sia819' },
+    { label: 'GitHub', url: 'https://github.com/siakun' },
     { label: 'LinkedIn', url: 'https://www.linkedin.com/in/soung-gyu-jin/' },
   ],
 };
