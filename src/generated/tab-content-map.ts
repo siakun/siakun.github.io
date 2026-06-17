@@ -6,6 +6,7 @@ import type { TabContent } from './tab-home';
 import tabResume from './tab-resume';
 import tabExperience from './tab-experience';
 import tabIntroduction from './tab-introduction';
+import tabPortfolio from './tab-portfolio';
 import tabAbout from './tab-about';
 
 export type { TabContent };
@@ -14,5 +15,6 @@ export const TAB_CONTENT_MAP: Record<string, TabContent> = {
   'resume': tabResume,
   'experience': tabExperience,
   'introduction': tabIntroduction,
+  'portfolio': tabPortfolio,
   'about': tabAbout,
 };
