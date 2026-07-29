@@ -31,7 +31,7 @@ const CALLOUT_REGEX = /^\[!(NOTE|TIP|WARNING|IMPORTANT)\]\s*/;
 
 type CalloutType = 'NOTE' | 'TIP' | 'WARNING' | 'IMPORTANT';
 
-// heading factory — h1~h4의 반복 패턴 제거
+// heading factory: h1~h4의 반복 패턴 제거
 const createHeading = (
   Tag: 'h1' | 'h2' | 'h3' | 'h4',
   className: string,

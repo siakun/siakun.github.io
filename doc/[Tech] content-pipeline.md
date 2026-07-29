@@ -54,8 +54,8 @@ flowchart TD
 
 아래 id는 `CONTENT_TAB_DEFS` (탭 목록)에서 제외됩니다. 탭 스트립에 표시되지 않지만 `TAB_CONTENT`에는 포함되어 코드에서 직접 접근할 수 있습니다.
 
-- `home` — 메인 홈 화면
-- `settings` — 설정 페이지
+- `home`: 메인 홈 화면
+- `settings`: 설정 페이지
 
 ## 탭 라벨
 

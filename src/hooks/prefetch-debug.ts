@@ -24,18 +24,18 @@ function formatBytes(bytes: number): string {
 const navigationRequests = new Map<string, number>();
 
 export const prefetchDebug = {
-  /** navigateTab 호출 시 — 전환 대상 경로와 캐시 히트 여부를 기록 */
+  /** navigateTab 호출 시점에 전환 대상 경로와 캐시 히트 여부를 기록 */
   logNavigate(tabId: string, targetPath: string, wasPrefetched: boolean) {
     if (!DEBUG) return;
     navigationRequests.set(targetPath, performance.now());
     log(
       '전환',
-      `→ ${tabId} (${targetPath}) | 프리패치 ${wasPrefetched ? '✅ 캐시됨' : '❌ 없음 — cold load'}`,
+      `→ ${tabId} (${targetPath}) | 프리패치 ${wasPrefetched ? '✅ 캐시됨' : '❌ 없음 (cold load)'}`,
       wasPrefetched ? '#4caf50' : '#ff9800',
     );
   },
 
-  /** pathname 변경 후 렌더 완료 시 — 소요 시간 또는 직접 로드 여부를 출력 */
+  /** pathname 변경 후 렌더가 끝난 시점에 소요 시간 또는 직접 로드 여부를 출력 */
   logRender(pathname: string, wasPrefetched: boolean) {
     if (!DEBUG) return;
     const requestTime = navigationRequests.get(pathname);

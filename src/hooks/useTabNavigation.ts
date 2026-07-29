@@ -11,7 +11,7 @@ interface HintState {
   direction: 'up' | 'down';
 }
 
-// LRU 프리패치 캐시 — Map 삽입 순서를 활용한 최소 구현
+// LRU 프리패치 캐시. Map 삽입 순서를 활용한 최소 구현
 const MAX_PREFETCH_CACHE = 10;
 const SWIPE_THRESHOLD = 50;
 const prefetchCache = new Map<string, number>(); // path → timestamp (삽입 순서 = LRU 순서)

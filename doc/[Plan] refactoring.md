@@ -6,7 +6,7 @@
 
 ## 1단계: 데드 코드 제거 (낮음)
 
-### 1-1. `globals.css` — 미사용 CSS 클래스 삭제
+### 1-1. `globals.css`: 미사용 CSS 클래스 삭제
 
 `.swipe-chevron-left`, `.swipe-chevron-right` 클래스가 존재하지 않는 키프레임(`swipe-chevron-bounce-left`, `swipe-chevron-bounce-right`)을 참조하며, 코드베이스 어디서도 사용되지 않음.
 
@@ -28,8 +28,8 @@
 
 ### 주의사항 (CLAUDE.md 규칙)
 
-- `var(--…)` 색상 변수를 사용하는 요소에 **색상 관련 `transition` 금지** — `@property`가 `:root`에서 이미 처리
-- `border` shorthand 사용 금지 — `borderWidth`, `borderStyle`, `borderColor` 분리 필수
+- `var(--…)` 색상 변수를 사용하는 요소에 **색상 관련 `transition` 금지**: `@property`가 `:root`에서 이미 처리
+- `border` shorthand 사용 금지: `borderWidth`, `borderStyle`, `borderColor` 분리 필수
 - 따라서 `border` 관련 inline style은 Tailwind로 옮길 때 `border border-[var(--border-warm)]` 같은 형식 사용 (이미 `.border-warm` 유틸리티 클래스도 존재)
 
 ### 대상 파일 및 변경 패턴
@@ -45,9 +45,9 @@
 
 ### 변환 불가 항목 (inline style 유지)
 
-- `boxShadow: 'var(--modal-shadow)'` — Tailwind에 shadow 임의값으로 CSS 변수를 넣으면 동작하지 않는 경우가 있음. 테스트 후 판단
-- `background: linear-gradient(...)` — 복합 값은 inline 유지가 자연스러움
-- 동적 값 (`accentColor` prop 등) — 런타임에 결정되므로 inline 필수
+- `boxShadow: 'var(--modal-shadow)'`: Tailwind에 shadow 임의값으로 CSS 변수를 넣으면 동작하지 않는 경우가 있음. 테스트 후 판단
+- `background: linear-gradient(...)`: 복합 값은 inline 유지가 자연스러움
+- 동적 값 (`accentColor` prop 등): 런타임에 결정되므로 inline 필수
 
 ---
 
@@ -114,7 +114,7 @@ const TAB_CONFIG = {
 
 ### 변경안
 
-**A. `useModalEsc` 훅 추출** — ESC 키 핸들링만 분리 (최소 변경)
+**A. `useModalEsc` 훅 추출**: ESC 키 핸들링만 분리 (최소 변경)
 
 ```typescript
 // src/hooks/useModalEsc.ts
@@ -128,7 +128,7 @@ const useModalEsc = (isOpen: boolean, onClose: () => void) => {
 };
 ```
 
-**B. `<MediaViewer>` 컴포넌트 추출** — PDF/이미지 분기 렌더링 통합
+**B. `<MediaViewer>` 컴포넌트 추출**: PDF/이미지 분기 렌더링 통합
 
 ```typescript
 // src/components/common/MediaViewer.tsx
@@ -170,11 +170,11 @@ const MediaViewer = ({ src, alt, onError }: MediaViewerProps) => {
 
 ```
 useTabNavigation.ts (오케스트레이터, ~40줄)
-├── useTabCore.ts        — 탭 상태 + 전환 함수 + pathname 리셋 (~50줄)
-├── useTabPrefetch.ts    — LRU 캐시 + 인접 프리패치 (~80줄)
-├── useTabKeyboard.ts    — 키보드 ArrowUp/Down (~15줄)
-├── useTabWheel.ts       — 외부 휠 + 내부 스크롤 + boundary 감지 (~80줄)
-└── useTabTouch.ts       — 터치 스와이프 (~30줄)
+├── useTabCore.ts       : 탭 상태 + 전환 함수 + pathname 리셋 (~50줄)
+├── useTabPrefetch.ts   : LRU 캐시 + 인접 프리패치 (~80줄)
+├── useTabKeyboard.ts   : 키보드 ArrowUp/Down (~15줄)
+├── useTabWheel.ts      : 외부 휠 + 내부 스크롤 + boundary 감지 (~80줄)
+└── useTabTouch.ts      : 터치 스와이프 (~30줄)
 ```
 
 **주의**: `prefetchLRU`는 모듈 레벨 싱글턴이므로 별도 파일(`prefetch-cache.ts`)로 분리하면 임포트가 명확해짐.

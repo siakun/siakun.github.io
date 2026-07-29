@@ -2,9 +2,9 @@
 
 ## MY Career
 
-2년여간 VR·AR·XR 메타버스 솔루션 기업에서 Unity 클라이언트부터 ASP.NET Core 백엔드, Linux 서버 인프라까지 프로젝트의 전체 스택을 주도한 Software Engineer입니다.
+2년여간 VR/AR/XR 메타버스 솔루션 기업에서 Unity 클라이언트부터 ASP.NET Core 백엔드, Linux 서버 인프라까지 프로젝트의 전체 스택을 주도한 Software Engineer입니다.
 
-디지털 트윈 프로젝트에서는 메인 개발 리드로서 백엔드 API 서버를 단독 설계·구축하고, MVVM + R3 리액티브 바인딩 기반 클라이언트 아키텍처를 설계했습니다. FBX→glTF 서버 변환 파이프라인을 구축하여 대형 모델 로딩을 5분에서 30초로 단축했고, 고객사와 직접 소통하며 요구사항 분석부터 납품까지 전 과정을 이끌었습니다.
+디지털 트윈 프로젝트에서는 메인 개발 리드로서 백엔드 API 서버를 단독으로 설계하고 구축했으며, MVVM + R3 리액티브 바인딩 기반 클라이언트 아키텍처를 설계했습니다. FBX→glTF 서버 변환 파이프라인을 구축하여 대형 모델 로딩을 5분에서 30초로 단축했고, 고객사와 직접 소통하며 요구사항 분석부터 납품까지 전 과정을 이끌었습니다.
 
 VR 도장 시뮬레이션에서는 6차×2차 3D 보간 함수를 설계하여 VR 90fps 환경에서 매 프레임 실시간 연산이 가능한 수식 기반 시뮬레이션을 구현했습니다.
 
@@ -29,11 +29,11 @@ VR 도장 시뮬레이션에서는 6차×2차 3D 보간 함수를 설계하여 V
 
 [디지털 트윈 팩토리] 메인 개발 리드 (2024.08~2025.09)
 Unity C#, ASP.NET Core, EF Core, PostgreSQL, MVVM, R3 Reactive
-- 제조공장 설비 3D 배치·관리 및 공정 시뮬레이션 디지털 트윈 솔루션 개발
-- ASP.NET Core + EF Core + PostgreSQL 기반 REST API 서버 단독 설계·구축 (ERD, CRUD, JWT 인증, RBAC)
+- 제조공장 설비 3D 배치/관리 및 공정 시뮬레이션 디지털 트윈 솔루션 개발
+- ASP.NET Core + EF Core + PostgreSQL 기반 REST API 서버 단독 설계/구축 (ERD, CRUD, JWT 인증, RBAC)
 - MVVM 패턴 + R3 리액티브 바인딩 기반 클라이언트 아키텍처 설계, UI 상태 버그 제로 달성
 - FBX→glTF 서버 변환 파이프라인 구축 (Blender CLI), 대형 모델(50~90MB) 로딩 5분→30초 단축
-- 큐·코루틴 기반 공정 시뮬레이션, 설비 간 물류 흐름·병목구간 실시간 시각화
+- 큐와 코루틴 기반 공정 시뮬레이션, 설비 간 물류 흐름과 병목구간 실시간 시각화
 - 고객사 방문 요구사항 협의, 사용설명서 작성 및 납품, 신입사원 코드리뷰 교육
 
 [페인트 도장 VR 시뮬레이션] Unity 개발 (2023.12~2025.05)
@@ -41,7 +41,7 @@ Unity C#, Python, VFX Graph, Shader, Compute Shader
 - 대기업 중공업사 대상, 실제 도료 물성 데이터 기반 VR 도장 교육 시뮬레이션 개발
 - 6차×2차 3D 보간 함수 설계, VR 90fps 매 프레임 실시간 수식 연산 구현
 - Python으로 raw data 재산출 (엑셀 정밀도 한계 해결), C# 자동 포팅 스크립트 개발
-- VFX Graph/Particle 분사 시각화, 동적 메쉬·Shader 기반 도장 질감 구현
+- VFX Graph/Particle 분사 시각화, 동적 메쉬와 Shader 기반 도장 질감 구현
 
 [XR 메타버스 플랫폼] Unity 개발 (2023.08~2023.11)
 Unity C#, Photon Networking, WebSocket, REST API, JWT
@@ -51,7 +51,7 @@ Unity C#, Photon Networking, WebSocket, REST API, JWT
 
 [로봇 팔 제어 모니터링 시스템] WPF 클라이언트 개발 (2024.05~2024.09)
 WPF, C#, MVVM, 시리얼 통신
-- 로봇 팔 제어 및 모니터링 데스크톱 앱 설계·개발
+- 로봇 팔 제어 및 모니터링 데스크톱 앱 설계와 개발
 - 시리얼 통신 하드웨어 연동, 현장 출장 실장비 테스트
 
 [기타] 사내 인프라 및 기여

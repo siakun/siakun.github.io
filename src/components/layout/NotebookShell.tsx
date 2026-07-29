@@ -113,7 +113,7 @@ const NotebookShell = ({ children }: NotebookShellProps) => {
           </div>
         </div>
 
-        {/* 첫 방문 스크롤/스와이프 힌트 — 노트북 컨테이너 기준 */}
+        {/* 첫 방문 스크롤/스와이프 힌트. 노트북 컨테이너 기준 */}
         {showScrollHint && (
           <ScrollDownHint scrollRef={contentRef} />
         )}

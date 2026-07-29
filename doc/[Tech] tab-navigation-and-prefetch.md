@@ -75,10 +75,10 @@ Unable to preventDefault inside passive event listener invocation.
 React prop(`onWheel`) 대신 `useEffect` 내에서 네이티브 `addEventListener`로 `{ passive: false }` 옵션을 명시적으로 지정한다.
 
 ```typescript
-// ❌ React onWheel — passive라 preventDefault 불가
+// ❌ React onWheel: passive라 preventDefault 불가
 <div onWheel={handleContentWheel} />
 
-// ✅ 네이티브 리스너 — passive: false로 preventDefault 허용
+// ✅ 네이티브 리스너 (passive: false로 preventDefault 허용)
 useEffect(() => {
   const el = contentRef.current;
   if (!el) return;

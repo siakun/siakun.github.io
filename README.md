@@ -40,7 +40,7 @@ out/ 내용물이 GitHub Pages 아티팩트로 업로드
   ↓
 GitHub Pages CDN이 아티팩트를 서빙
   ↓
-https://siakun.github.io 에 반영 완료
+https://siakun.github.io에 반영 완료
 ```
 
 **핵심 포인트:**
