@@ -10,7 +10,7 @@ export interface TabDefMeta {
 
 export const ALL_TAB_METAS: TabDefMeta[] = [
   { id: 'home', label: 'home', icon: 'home', description: '' },
-  { id: 'resume', label: '이력서', icon: null, description: '`C#` `Unity` `ASP.NET Core` `EF Core` `PostgreSQL` `Python` `Git`' },
+  { id: 'resume', label: '이력서', icon: null, description: '**Unity/C# 클라이언트 개발자** | 경력 2년 2개월' },
   { id: 'experience', label: '경력기술서', icon: null, description: '**Unity Full-Stack Developer** | 2023.08 - 2025.09 (2년 2개월)' },
   { id: 'introduction', label: '자기소개서', icon: null, description: '재사용 가능하고 유지보수하기 좋은 구조를 설계하는 것을 지향하는 개발자입니다.' },
   { id: 'portfolio', label: 'portfolio', icon: null, description: '' },
