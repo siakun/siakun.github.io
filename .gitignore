@@ -149,6 +149,7 @@ vite.config.ts.timestamp-*
 
 # claude
 .claude/
+.mcp.json
 
 # next.js specific
 next-env.d.ts
