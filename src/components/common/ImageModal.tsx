@@ -9,7 +9,7 @@ interface ImageModalProps {
   children: ReactNode;
 }
 
-// /certificates/[2025-08] Google AI Essentials.pdf → [2025-08] Google AI Essentials.pdf
+// /docs/sample-file.pdf -> sample-file.pdf
 const getFilename = (src: string) => {
   const parts = src.split('/');
   return decodeURIComponent(parts[parts.length - 1]);
