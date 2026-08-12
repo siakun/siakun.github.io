@@ -106,7 +106,7 @@
 
 ## 문서 구조
 
-이력서 마크다운 파일(`doc/[Career] saramin-resume.md`)은 아래 구조를 따른다:
+이력서 마크다운 파일(`docs/[20260314-Career] saramin-resume.md`)은 아래 구조를 따른다:
 
 ```markdown
 # 사람인 이력서
