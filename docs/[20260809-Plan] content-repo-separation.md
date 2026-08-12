@@ -36,10 +36,10 @@
 
 ```mermaid
 flowchart TD
-    A["콘텐츠 저장소: public/ 에 커밋 후 push"]
+    A["콘텐츠 저장소: siakun.github.io/public/ 에 커밋 후 push"]
     B["콘텐츠 저장소 CI"]
     C["siakun.github.io CI (deploy.yml)"]
-    D["public/ 만 sparse-checkout"]
+    D["siakun.github.io/public/ 만 sparse-checkout"]
     E["next build (output: export)"]
     F["GitHub Pages 배포"]
 
@@ -57,11 +57,11 @@ flowchart TD
 
 콘텐츠 후보 디렉터리의 실제 파일명을 이 패턴에 대조해 봤다. 발행 대상이 아닌 작업 문서 두 개가 규칙에 걸렸다. 걸리지 않은 문서들도 안전해서가 아니라 이름이 숫자로 시작하지 않아서 빠진 것이다. 문서를 정렬하려고 앞에 번호를 붙이는 순간 발행된다. 지금 안전한 것은 우연이다.
 
-콘텐츠 저장소에 `public/`을 두고 그 안의 파일만 발행한다. 파일을 옮기는 동작 하나가 곧 발행 결정이 되고, 밖에 있는 파일은 이름을 어떻게 바꿔도 올라가지 않는다.
+콘텐츠 저장소에 `siakun.github.io/public/`을 두고 그 안의 파일만 발행한다. 파일을 옮기는 동작 하나가 곧 발행 결정이 되고, 밖에 있는 파일은 이름을 어떻게 바꿔도 올라가지 않는다.
 
 발행 목록 파일을 두는 방식은 쓰지 않는다. 파일 추가와 목록 수정 두 곳을 손대야 하고 목록을 빠뜨리면 조용히 누락된다. 위치로 정하면 손댈 곳이 하나다.
 
-목적지가 하나 더 있다. 지원 기업에만 보여줄 문서는 `private/`에 두고 인증이 걸린 별도 호스트로 배포한다. 설계는 `docs/[20260812-Plan] private-document-access.md`에 있다. 이 문서에서 말하는 발행은 `public/`를 거쳐 공개 사이트로 가는 경로만 가리킨다.
+목적지가 하나 더 있다. 지원 기업에만 보여줄 문서는 `siakun.github.io/private/`에 두고 인증이 걸린 별도 호스트로 배포한다. 설계는 `docs/[20260812-Plan] private-document-access.md`에 있다. 이 문서에서 말하는 발행은 `siakun.github.io/public/`을 거쳐 공개 사이트로 가는 경로만 가리킨다.
 
 ### 5-B. 콘텐츠는 raw 요청이 아니라 actions/checkout으로 가져온다
 
@@ -81,10 +81,10 @@ raw로도 동작한다. 다만 발행 파일명이 공백과 한글을 포함하
     repository: siakun-private/notes
     token: ${{ steps.content-token.outputs.token }}
     path: .content
-    sparse-checkout: public
+    sparse-checkout: siakun.github.io/public
 ```
 
-`sparse-checkout`을 걸면 러너에 `public/`만 놓인다. 콘텐츠 저장소의 나머지 문서는 러너 디스크에 내려오지 않는다. 실제 fetch 범위는 구현할 때 확인한다.
+`sparse-checkout`을 걸면 러너에 `siakun.github.io/public/`만 놓인다. 콘텐츠 저장소의 나머지 문서는 러너 디스크에 내려오지 않는다. 실제 fetch 범위는 구현할 때 확인한다.
 
 ### 5-C. 자격증명은 갱신이 필요 없는 것으로, 방향별로 다르게 둔다
 
@@ -177,7 +177,7 @@ PAT는 쓰지 않는다. fine-grained PAT는 최대 1년이고 GitHub에 PAT를 
 
 ## 6. 감수할 비용
 
-- **렌더 결과는 공개된다.** `output: 'export'`라 `public/`의 내용은 HTML로 구워져 사이트에 올라간다. 콘텐츠 저장소가 private인 것은 원본과 이력을 가리는 것이지 내용을 가리는 것이 아니다
+- **렌더 결과는 공개된다.** `output: 'export'`라 발행 디렉터리의 내용은 HTML로 구워져 사이트에 올라간다. 콘텐츠 저장소가 private인 것은 원본과 이력을 가리는 것이지 내용을 가리는 것이 아니다
 - **로컬 개발에 단계가 하나 는다.** 콘텐츠가 밖에 있으므로 `npm run dev` 전에 받아와야 한다. 로컬은 `gh`가 인증돼 있으므로 pull 스크립트 하나로 해결한다
 - **과거 배포를 재현하지 못한다.** submodule은 커밋 포인터로 콘텐츠 버전을 고정하지만 이 방식은 빌드 시점의 최신을 가져온다
 - **공개 저장소만으로는 빌드되지 않는다.** clone해서 돌려보려는 사람은 콘텐츠가 없어 실패한다. 샘플 콘텐츠를 두거나 README에 전제를 적는다
@@ -192,22 +192,22 @@ PAT는 쓰지 않는다. fine-grained PAT는 최대 1년이고 GitHub에 PAT를 
 
 | 위치 | 가는 곳 |
 |---|---|
-| `public/` | 공개 사이트 |
-| `private/` | 인증이 걸린 별도 호스트. `docs/[20260812-Plan] private-document-access.md` 참고 |
+| `siakun.github.io/public/` | 공개 사이트 |
+| `siakun.github.io/private/` | 인증이 걸린 별도 호스트. `docs/[20260812-Plan] private-document-access.md` 참고 |
 | `work/` | 어디에도 가지 않음 |
 
-`work/`는 배포되지 않는 문서를 모으는 자리다. 기업 조사와 진로 기록처럼 지원 기업에게도 보이면 안 되는 문서가 여기 들어간다. `private/`는 지원 기업이 로그인해서 읽는 자리이므로 그런 문서를 두면 그대로 노출된다.
+`work/`는 배포되지 않는 문서를 모으는 자리다. 기업 조사와 진로 기록처럼 지원 기업에게도 보이면 안 되는 문서가 여기 들어간다. `siakun.github.io/private/`는 지원 기업이 로그인해서 읽는 자리이므로 그런 문서를 두면 그대로 노출된다.
 
-경계를 한 단계로 유지한다. `private/` 아래에 배포되는 하위 폴더와 배포되지 않는 하위 폴더를 섞으면, 어느 파일이 나가는지 경로를 끝까지 따라가야 알 수 있게 되어 실수하기 쉬워진다.
+발행 경계는 소비자 폴더 바로 아래 한 단계로 유지한다. `siakun.github.io/private/` 아래에 배포되는 하위 폴더와 배포되지 않는 하위 폴더를 섞으면, 어느 파일이 나가는지 경로를 끝까지 따라가야 알 수 있게 되어 실수하기 쉬워진다.
 
-콘텐츠 저장소의 `public/`은 사이트 저장소의 `public/`(Next.js 정적 자산)과 이름만 같고 서로 다른 저장소의 다른 디렉터리다. 빌드할 때 콘텐츠는 `.content/` 아래로 체크아웃하므로 섞이지 않는다.
+콘텐츠는 소비자 이름을 폴더로 써서 묶는다. 다른 사이트가 이 저장소에서 콘텐츠를 가져가게 되면 그 이름으로 폴더를 하나 더 만든다. 빌드할 때는 `.content/` 아래로 체크아웃하므로 사이트 저장소의 `public/`(Next.js 정적 자산)과 섞이지 않는다.
 
 ## 8. 구현 순서
 
 준비 단계는 코드가 아니라 계정과 저장소 설정이다.
 
-1. `siakun-private/notes`를 만들고 `public/`, `private/`를 둔다
-2. 사이트의 마크다운을 `public/`으로 옮긴다. tsx는 사이트 저장소에 남긴다 (5-E)
+1. `siakun-private/notes`를 만들고 `siakun.github.io/public/`, `siakun.github.io/private/`를 둔다
+2. 사이트의 마크다운을 `siakun.github.io/public/`으로 옮긴다. tsx는 사이트 저장소에 남긴다 (5-E)
 3. 트리거용 GitHub App을 만들어 `siakun/siakun.github.io`에 설치하고, 앱 개인키와 App ID를 `siakun-private/notes`에 넣는다
 4. 읽기용 GitHub App을 만들어 `siakun-private/notes`에 설치하고, 앱 개인키와 App ID를 `siakun.github.io`에 넣는다
 
@@ -221,4 +221,4 @@ PAT는 쓰지 않는다. fine-grained PAT는 최대 1년이고 GitHub에 PAT를 
 
 ## 9. 관련 문서
 
-- `docs/[20260812-Plan] private-document-access.md`: 지원 기업용 비공개 문서 제공. 이 설계의 `public/` 옆에 `private/`를 놓는다
+- `docs/[20260812-Plan] private-document-access.md`: 지원 기업용 비공개 문서 제공. 이 설계의 `siakun.github.io/public/` 옆에 `siakun.github.io/private/`를 놓는다

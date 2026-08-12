@@ -3,7 +3,7 @@
 
 import type { ComponentType } from 'react';
 
-import aboutMd from '../../.content/public/99. about.md';
+import aboutMd from '../../.content/siakun.github.io/public/99. about.md';
 
 export type TabContent =
   | { type: 'markdown'; content: string }

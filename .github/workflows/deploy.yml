@@ -33,7 +33,7 @@ jobs:
           repository: siakun-private/notes
           token: ${{ steps.content-token.outputs.token }}
           path: .content
-          sparse-checkout: public
+          sparse-checkout: siakun.github.io/public
 
       - uses: actions/setup-node@v4
         with:

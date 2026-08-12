@@ -22,7 +22,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_DIR = join(__dirname, '..');
 const REPOSITORY = 'siakun-private/notes';
 const CONTENT_ROOT = join(PROJECT_DIR, '.content');
-const TARGET_DIR = join(CONTENT_ROOT, 'public');
+const CONTENT_PREFIX = 'siakun.github.io/public';
+const TARGET_DIR = join(CONTENT_ROOT, ...CONTENT_PREFIX.split('/'));
 
 if (process.env.CI && process.env.CI !== 'false') {
   console.log('CI 환경에서는 로컬 콘텐츠 pull을 건너뜁니다.');
@@ -90,20 +91,21 @@ try {
     checkoutDir,
     'sparse-checkout',
     'set',
-    'public',
+    CONTENT_PREFIX,
   ]);
   if (sparseCheckoutResult.error || sparseCheckoutResult.status !== 0) {
     throw new Error(
-      '콘텐츠 저장소의 public/ 디렉터리를 체크아웃하지 못했습니다.',
+      `콘텐츠 저장소의 ${CONTENT_PREFIX}/ 디렉터리를 체크아웃하지 못했습니다.`,
     );
   }
 
-  const sourceDir = join(checkoutDir, 'public');
+  const sourceDir = join(checkoutDir, ...CONTENT_PREFIX.split('/'));
   if (!existsSync(sourceDir)) {
-    throw new Error(`${REPOSITORY} 저장소에 public/ 디렉터리가 없습니다.`);
+    throw new Error(`${REPOSITORY} 저장소에 ${CONTENT_PREFIX}/ 디렉터리가 없습니다.`);
   }
 
-  mkdirSync(CONTENT_ROOT, { recursive: true });
+  // TARGET_DIR 이 중첩 경로이므로 상위까지 만들어야 rename 이 성공한다.
+  mkdirSync(dirname(TARGET_DIR), { recursive: true });
   stagingDir = join(CONTENT_ROOT, `.public-${process.pid}-${Date.now()}`);
   cpSync(sourceDir, stagingDir, { recursive: true });
 

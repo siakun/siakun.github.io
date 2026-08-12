@@ -29,7 +29,7 @@ const PROJECT_DIR = join(__dirname, '..');
 const COMPONENT_CONTENT_DIR = join(PROJECT_DIR, 'src', 'content');
 const EXTERNAL_CONTENT_DIR = resolve(
   PROJECT_DIR,
-  process.env.EXTERNAL_CONTENT_DIR || '.content/public',
+  process.env.EXTERNAL_CONTENT_DIR || '.content/siakun.github.io/public',
 );
 const GENERATED_DIR = join(PROJECT_DIR, 'src', 'generated');
 

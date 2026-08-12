@@ -53,15 +53,15 @@ Cloudflare 엣지가 인증을 처리하므로 인증 전에는 본문이 아예
 
 | 위치 | 가는 곳 |
 |---|---|
-| `public/` | `siakun.com` |
-| `private/` | `private.siakun.com` |
+| `siakun.github.io/public/` | `siakun.com` |
+| `siakun.github.io/private/` | `private.siakun.com` |
 | 그 밖 | 어디에도 가지 않음 |
 
 ```mermaid
 flowchart TD
     R["콘텐츠 저장소 (private)"]
-    P1["public/"]
-    P2["private/"]
+    P1["siakun.github.io/public/"]
+    P2["siakun.github.io/private/"]
     G["GitHub Pages"]
     C["Cloudflare Pages"]
     A["Cloudflare Access (One-time PIN)"]
@@ -82,7 +82,7 @@ Access는 Cloudflare를 지나는 경로만 지킨다. 같은 파일이 다른 �
 
 공개 저장소의 빌드에 private 문서를 넣으면 우회로가 둘 생긴다. GitHub Pages 오리진이 같은 파일을 그대로 들고 있고, 공개 저장소의 Actions 산출물에도 들어간다. 현관에만 자물쇠를 달고 뒷문을 열어두는 셈이다.
 
-그래서 `private/`는 공개 사이트 빌드에서 제외하고, Cloudflare Pages가 콘텐츠 저장소에서 직접 빌드한다. Cloudflare Pages는 private GitHub 저장소에 연결할 수 있다.
+그래서 `siakun.github.io/private/`는 공개 사이트 빌드에서 제외하고, Cloudflare Pages가 콘텐츠 저장소에서 직접 빌드한다. Cloudflare Pages는 private GitHub 저장소에 연결할 수 있다.
 
 ### 6-B. 인증은 One-time PIN을 쓴다
 
@@ -114,12 +114,12 @@ Access는 Cloudflare를 지나는 경로만 지킨다. 같은 파일이 다른 �
 ## 9. 구현 순서
 
 1. `siakun.com`을 GitHub Pages 커스텀 도메인으로 연결한다
-2. 콘텐츠 저장소에 `private/`를 만든다
+2. 콘텐츠 저장소에 `siakun.github.io/private/`를 만든다
 3. Cloudflare Pages 프로젝트를 콘텐츠 저장소에 연결하고 `private.siakun.com`으로 배포한다
 4. Zero Trust에서 Access 애플리케이션을 만들고 One-time PIN 정책을 건다
 5. 인증하지 않은 상태로 접근해 본문이 나오지 않는지 확인한다
-6. 공개 사이트 산출물에 `private/` 문서가 섞이지 않았는지 확인한다
+6. 공개 사이트 산출물에 private 문서가 섞이지 않았는지 확인한다
 
 ## 10. 관련 문서
 
-- `docs/[20260809-Plan] content-repo-separation.md`: 콘텐츠 저장소 분리. 이 문서의 `private/`는 그 설계의 `public/`과 나란히 놓인다
+- `docs/[20260809-Plan] content-repo-separation.md`: 콘텐츠 저장소 분리. 이 문서의 `siakun.github.io/private/`는 그 설계의 `siakun.github.io/public/`과 나란히 놓인다
