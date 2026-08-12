@@ -1,2 +1,7 @@
 # 자동 생성 파일은 LF로 고정 (빌드 스크립트가 LF로 생성하므로)
 src/generated/** eol=lf
+
+# 자동 로드되는 프로젝트 지침은 두 에이전트에서 같은 바이트로 읽히게 한다
+# (sync-project-instructions.ps1이 SHA-256으로 일치를 판정하므로).
+AGENTS.md text eol=lf
+CLAUDE.md text eol=lf

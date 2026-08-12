@@ -153,3 +153,6 @@ vite.config.ts.timestamp-*
 
 # next.js specific
 next-env.d.ts
+
+# 지침 동기화 스크립트가 덮어쓰기 전에 남기는 사본
+backup/
