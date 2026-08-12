@@ -52,9 +52,9 @@ src/
 │   │   └── markdown/               # 마크다운 하위 컴포넌트 (CodeBlock, Callout)
 │   └── tabs/               # 탭 UI 컴포넌트
 │       └── TabButton.tsx    # 탭 버튼 + 탭 스트립
-├── content/                # 콘텐츠 원본 파일 (파일명 규칙: "<번호>. <id>.<확장자>")
-│   ├── *.md                #   마크다운 → { type: 'markdown' } 탭으로 변환
-│   └── *.tsx               #   React 컴포넌트 → { type: 'component' } 탭으로 변환
+├── content/                # 사이트 코드와 결합된 React 탭 컴포넌트
+│   ├── *.tsx               #   { type: 'component' } 탭으로 변환
+│   └── *.md                #   생성기에서 무시하며 외부 저장소의 원본만 발행
 ├── generated/              # 자동 생성 파일 (직접 import 금지, 아래 주의사항 참고)
 ├── lib/
 │   └── tabs.ts             # 탭 정의 및 콘텐츠 (generated의 유일한 소비자)
@@ -65,6 +65,9 @@ src/
 └── types/                  # TypeScript 타입 정의
 public/
 └── certificates/           # 자격증 이미지 (about.md에서 참조)
+.content/                    # gitignored, 로컬 pull 또는 CI checkout으로 생성
+└── public/
+    └── *.md                 # 외부 공개 콘텐츠 → { type: 'markdown' } 탭으로 변환
 ```
 
 ## generated 폴더 (자동 생성)
@@ -72,14 +75,16 @@ public/
 `src/generated/`는 `scripts/generate-content-index.mjs`가 빌드 타임에 자동 생성하는 파일들이 위치한다. `npm run generate` (또는 `predev`/`prebuild` 훅)으로 생성된다.
 
 ### 생성되는 파일
+
 - `tab-defs.ts`: 탭 메타데이터 (ID, 라벨, 아이콘, description)
 - `tab-content-map.ts`: 전체 탭 콘텐츠 매핑 (home 제외)
 - `tab-[tabId].ts`: 각 탭의 개별 콘텐츠
 
 ### 주의사항
+
 - **`@/generated/`를 직접 import하지 않는다.** generated 파일은 빌드 전에는 존재하지 않으므로 직접 참조하면 IDE 에러가 발생하고 의존성이 분산된다.
 - **`src/lib/tabs.ts`가 generated의 유일한 소비자이다.** 다른 모든 파일은 `@/lib/tabs`를 통해서만 탭 데이터에 접근한다.
-- **generated 파일을 수동 편집하지 않는다.** 콘텐츠 변경은 `src/content/`에서, 생성 로직 변경은 `scripts/generate-content-index.mjs`에서 수행한다.
+- **generated 파일을 수동 편집하지 않는다.** React 콘텐츠는 `src/content/`에서, 마크다운은 `siakun-private/notes`의 `public/`에서, 생성 로직은 `scripts/generate-content-index.mjs`에서 변경한다.
 
 ```
 src/generated/  ← 직접 참조 금지
@@ -91,12 +96,13 @@ src/lib/tabs.ts ← 유일한 소비자, re-export
 
 ## 콘텐츠 렌더링 파이프라인
 
-1. **콘텐츠 작성**: `src/content/`에 `<번호>. <id>.md` 또는 `<번호>. <id>.tsx` 형식으로 파일 생성
-2. **자동 생성**: `npm run generate` → `src/generated/`에 탭 정의 + 콘텐츠 파일 생성
-3. **탭 유형**: `{ type: 'markdown', content: string }` 또는 `{ type: 'component', component: ComponentType }`
-4. **라우팅**: `app/page.tsx`(홈) + `app/[tabId]/page.tsx`(나머지)가 `lib/tabs.ts`를 통해 콘텐츠 접근
-5. **렌더링**: `TabContentRenderer`가 타입에 따라 `MarkdownSection` 또는 React 컴포넌트로 렌더링
-6. **새 탭 추가**: `src/content/`에 파일 추가 → `npm run generate` → 자동 반영 (코드 수정 불필요)
+1. **콘텐츠 작성**: React 탭은 `src/content/`에 `<번호>. <id>.tsx`, 마크다운 탭은 `siakun-private/notes`의 `public/`에 `<번호>. <id>.md` 형식으로 생성
+2. **콘텐츠 확보**: 로컬은 `npm run content:pull`, CI는 `actions/checkout`으로 외부 마크다운을 `.content/public/`에 배치
+3. **자동 생성**: `npm run generate`가 두 소스를 번호로 병합하고 `src/generated/`에 탭 정의와 콘텐츠 파일 생성
+4. **충돌 검사**: 두 소스의 번호나 ID가 겹치면 충돌한 파일을 출력하고 생성 중단
+5. **탭 유형**: `{ type: 'markdown', content: string }` 또는 `{ type: 'component', component: ComponentType }`
+6. **라우팅**: `app/page.tsx`(홈) + `app/[tabId]/page.tsx`(나머지)가 `lib/tabs.ts`를 통해 콘텐츠 접근
+7. **렌더링**: `TabContentRenderer`가 타입에 따라 `MarkdownSection` 또는 React 컴포넌트로 렌더링
 
 ## 레이아웃
 
@@ -109,6 +115,7 @@ src/lib/tabs.ts ← 유일한 소비자, re-export
 - 커밋 메시지: 프로젝트의 기존 커밋 히스토리 언어를 따름
 
 ### 네이밍
+
 - 컴포넌트: PascalCase (`PostCard.tsx`)
 - 함수/변수: camelCase (`getUserName`)
 - 상수: UPPER_SNAKE_CASE (`MAX_POSTS_PER_PAGE`)
@@ -116,11 +123,13 @@ src/lib/tabs.ts ← 유일한 소비자, re-export
 - CSS 클래스: Tailwind 유틸리티 클래스 사용 (커스텀 클래스는 kebab-case)
 
 ### 컴포넌트 패턴
+
 - 함수형 컴포넌트 + Arrow Function 사용
 - Props 타입은 컴포넌트 파일 상단에 interface로 정의
 - `'use client'`는 필요한 경우에만 사용 (기본은 Server Component)
 
 ### 임포트 순서
+
 1. React/Next.js 내장 모듈
 2. 외부 라이브러리
 3. 내부 모듈 (`@/` alias)
@@ -135,6 +144,7 @@ Conventional Commits 형식을 따른다:
 ```
 
 ### 타입
+
 - `feat`: 새 기능 추가
 - `fix`: 버그 수정
 - `docs`: 문서 변경
@@ -162,6 +172,8 @@ npm run lint     # ESLint 실행
 npm run format   # Prettier 포매팅
 ```
 
+- 로컬 `dev`와 `build`: GitHub CLI 인증으로 `siakun-private/notes`의 `public/`을 먼저 확보
+- CI: 워크플로에서 콘텐츠를 체크아웃하고 `content-pull.mjs`의 pull 생략
 - `main` 브랜치에 push/merge 시 GitHub Actions가 자동으로 빌드 & GitHub Pages 배포
 - `next.config.ts`에서 `output: 'export'` 설정 필수
 
