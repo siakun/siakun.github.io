@@ -1,71 +1,167 @@
 /**
- * content 디렉토리를 스캔하여 generated/ 파일들을 자동 생성하는 스크립트.
+ * Scans site components and externally supplied Markdown, then generates tab files.
  *
- * 생성 파일:
- * - generated/tab-defs.ts: 탭 메타데이터 (ID, 라벨, 아이콘, 색상)
- * - generated/tab-[tabId].ts: 각 탭의 콘텐츠 (개별 번들)
+ * Generated files:
+ * - generated/tab-defs.ts: tab metadata (ID, label, icon, description)
+ * - generated/tab-[tabId].ts: content for each tab (individual bundle)
  *
- * 파일명 규칙: <번호>. <id>.<md|tsx>
- * - md  → { type: 'markdown', content: string }
- * - tsx → { type: 'component', component: ComponentType }
- * - home → 특수 탭 (아이콘: home, 루트 경로)
- * - about → 특수 탭 (아이콘: about, 맨 뒤 배치)
- * - md 파일의 첫 번째 `# heading`이 탭 라벨로 사용됨
+ * Filename rule: <order>. <id>.<md|tsx>
+ * - src/content/*.tsx -> { type: 'component', component: ComponentType }
+ * - external/*.md    -> { type: 'markdown', content: string }
+ * - home             -> special tab (icon: home, root path)
+ * - about            -> special tab (icon: about, placed last by its order)
+ * - the first `# heading` in a Markdown file becomes its tab label
  */
 
-import { readdirSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  unlinkSync,
+  writeFileSync,
+} from 'node:fs';
+import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const CONTENT_DIR = join(__dirname, '..', 'src', 'content');
-const GENERATED_DIR = join(__dirname, '..', 'src', 'generated');
+const PROJECT_DIR = join(__dirname, '..');
+const COMPONENT_CONTENT_DIR = join(PROJECT_DIR, 'src', 'content');
+const EXTERNAL_CONTENT_DIR = resolve(
+  PROJECT_DIR,
+  process.env.EXTERNAL_CONTENT_DIR || '.content/public',
+);
+const GENERATED_DIR = join(PROJECT_DIR, 'src', 'generated');
 
 const FILE_PATTERN = /^(\d+)\.\s+(.+)\.(md|tsx)$/;
 
-// content 디렉토리 스캔 및 파싱
-const files = readdirSync(CONTENT_DIR)
-  .filter((f) => FILE_PATTERN.test(f))
-  .map((filename) => {
-    const match = filename.match(FILE_PATTERN);
-    const [, numStr, id, ext] = match;
-    return { filename, order: parseInt(numStr, 10), id, ext };
-  })
-  .sort((a, b) => a.order - b.order);
+function scanContent(directory, expectedExtension) {
+  if (!existsSync(directory)) return [];
 
-// md 파일에서 첫 번째 # heading 추출
+  return readdirSync(directory, { withFileTypes: true })
+    .filter((entry) => entry.isFile())
+    .map((entry) => {
+      const match = entry.name.match(FILE_PATTERN);
+      if (!match || match[3] !== expectedExtension) return null;
+
+      const [, order, id, extension] = match;
+      return {
+        filepath: join(directory, entry.name),
+        order: Number.parseInt(order, 10),
+        id,
+        ext: extension,
+      };
+    })
+    .filter(Boolean);
+}
+
+// The directory boundary is the publication boundary. Local Markdown and
+// external TSX files are intentionally ignored even when their names match.
+const files = [
+  ...scanContent(COMPONENT_CONTENT_DIR, 'tsx'),
+  ...scanContent(EXTERNAL_CONTENT_DIR, 'md'),
+].sort((a, b) => a.order - b.order);
+
+function displayPath(filepath) {
+  const projectRelativePath = relative(PROJECT_DIR, filepath);
+  const isOutsideProject =
+    projectRelativePath === '..' ||
+    projectRelativePath.startsWith(`..${sep}`) ||
+    isAbsolute(projectRelativePath);
+
+  return (isOutsideProject ? filepath : projectRelativePath).replace(
+    /\\/g,
+    '/',
+  );
+}
+
+function findConflicts(property, label) {
+  const values = new Map();
+
+  for (const file of files) {
+    const value = file[property];
+    const matches = values.get(value) ?? [];
+    matches.push(file);
+    values.set(value, matches);
+  }
+
+  return [...values.entries()]
+    .filter(([, matches]) => matches.length > 1)
+    .map(
+      ([value, matches]) =>
+        `  ${label} "${value}":\n${matches
+          .map((file) => `    - ${displayPath(file.filepath)}`)
+          .join('\n')}`,
+    );
+}
+
+// Validate the merged model before writing anything so a conflict cannot
+// leave a partially regenerated index behind.
+const conflicts = [
+  ...findConflicts('order', 'order'),
+  ...findConflicts('id', 'id'),
+];
+
+if (conflicts.length > 0) {
+  console.error(
+    [
+      'Content conflicts detected. Every order and id must be unique:',
+      ...conflicts,
+    ].join('\n'),
+  );
+  process.exit(1);
+}
+
+function toSingleQuotedString(value) {
+  return `'${value
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/\r/g, '\\r')
+    .replace(/\n/g, '\\n')}'`;
+}
+
+function toImportPath(filepath) {
+  const generatedRelativePath = relative(GENERATED_DIR, filepath).replace(
+    /\\/g,
+    '/',
+  );
+  return generatedRelativePath.startsWith('.')
+    ? generatedRelativePath
+    : `./${generatedRelativePath}`;
+}
+
+// Extract the first # heading from a Markdown file.
 function extractHeading(filepath) {
   const content = readFileSync(filepath, 'utf-8');
   const match = content.match(/^#\s+(.+)$/m);
   return match ? match[1].trim() : null;
 }
 
-// md 파일에서 첫 번째 문단을 description으로 추출
+// Extract the first paragraph from a Markdown file as its description.
 function extractDescription(filepath) {
   const content = readFileSync(filepath, 'utf-8');
   const lines = content.split('\n');
   for (const line of lines) {
     const trimmed = line.trim();
-    // heading, 빈 줄, HTML 태그 건너뛰기
-    if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith('<')) continue;
-    // 첫 일반 텍스트 줄을 description으로 사용 (최대 160자)
+    // Skip headings, blank lines, and HTML tags.
+    if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith('<'))
+      continue;
+    // Use the first regular text line, limited to 160 characters.
     return trimmed.slice(0, 160);
   }
   return '';
 }
 
-// === tab-defs.ts 생성 ===
-const tabDefEntries = files.map(({ id, ext }) => {
+// === Generate tab-defs.ts ===
+const tabDefEntries = files.map(({ id, ext, filepath }) => {
   let label = id;
   let description = '';
   if (ext === 'md') {
-    const filepath = join(CONTENT_DIR, files.find((f) => f.id === id).filename);
     const heading = extractHeading(filepath);
     if (heading) label = heading;
     description = extractDescription(filepath);
   }
 
-  // 아이콘과 특수 처리
   let icon = 'null';
   if (id === 'home') icon = "'home'";
   else if (id === 'about') icon = "'about'";
@@ -84,13 +180,32 @@ export interface TabDefMeta {
 }
 
 export const ALL_TAB_METAS: TabDefMeta[] = [
-${tabDefEntries.map((t) => `  { id: '${t.id}', label: '${t.label}', icon: ${t.icon}, description: '${t.description.replace(/'/g, "\\'")}' },`).join('\n')}
+${tabDefEntries.map((tab) => `  { id: ${toSingleQuotedString(tab.id)}, label: ${toSingleQuotedString(tab.label)}, icon: ${tab.icon}, description: ${toSingleQuotedString(tab.description)} },`).join('\n')}
 ];
 `;
 
-// === 탭별 개별 콘텐츠 파일 생성 ===
-for (const { filename, id, ext } of files) {
-  const importPath = `../content/${filename.replace(/\\/g, '/')}`;
+mkdirSync(GENERATED_DIR, { recursive: true });
+
+const expectedGeneratedFiles = new Set([
+  'tab-defs.ts',
+  'tab-content-map.ts',
+  ...files.map(({ id }) => `tab-${id}.ts`),
+]);
+
+// A missing or renamed source must remove its old generated module as well.
+for (const entry of readdirSync(GENERATED_DIR, { withFileTypes: true })) {
+  if (
+    entry.isFile() &&
+    /^tab-.+\.ts$/.test(entry.name) &&
+    !expectedGeneratedFiles.has(entry.name)
+  ) {
+    unlinkSync(join(GENERATED_DIR, entry.name));
+  }
+}
+
+// === Generate individual tab content files ===
+for (const { filepath, id, ext } of files) {
+  const importPath = toImportPath(filepath);
   let content;
 
   if (ext === 'tsx') {
@@ -100,7 +215,7 @@ for (const { filename, id, ext } of files) {
 
 import type { ComponentType } from 'react';
 
-import ${varName} from '${importPath.replace(/\.tsx$/, '')}';
+import ${varName} from ${toSingleQuotedString(importPath.replace(/\.tsx$/, ''))};
 
 export type TabContent =
   | { type: 'markdown'; content: string }
@@ -116,7 +231,7 @@ export default tabContent;
 
 import type { ComponentType } from 'react';
 
-import ${varName} from '${importPath}';
+import ${varName} from ${toSingleQuotedString(importPath)};
 
 export type TabContent =
   | { type: 'markdown'; content: string }
@@ -130,13 +245,19 @@ export default tabContent;
   writeFileSync(join(GENERATED_DIR, `tab-${id}.ts`), content, 'utf-8');
 }
 
-// === tab-content-map.ts 생성 (home 제외) ===
+// === Generate tab-content-map.ts (excluding home) ===
 const contentMapFiles = files.filter(({ id }) => id !== 'home');
 const contentMapImports = contentMapFiles
-  .map(({ id }) => `import tab${id.charAt(0).toUpperCase() + id.slice(1)} from './tab-${id}';`)
+  .map(
+    ({ id }) =>
+      `import tab${id.charAt(0).toUpperCase() + id.slice(1)} from './tab-${id}';`,
+  )
   .join('\n');
 const contentMapEntries = contentMapFiles
-  .map(({ id }) => `  '${id}': tab${id.charAt(0).toUpperCase() + id.slice(1)},`)
+  .map(
+    ({ id }) =>
+      `  ${toSingleQuotedString(id)}: tab${id.charAt(0).toUpperCase() + id.slice(1)},`,
+  )
   .join('\n');
 
 const contentMapOutput = `// This file is auto-generated by scripts/generate-content-index.mjs
@@ -153,10 +274,12 @@ ${contentMapEntries}
 };
 `;
 
-// === 출력 ===
-mkdirSync(GENERATED_DIR, { recursive: true });
 writeFileSync(join(GENERATED_DIR, 'tab-defs.ts'), tabDefsOutput, 'utf-8');
-writeFileSync(join(GENERATED_DIR, 'tab-content-map.ts'), contentMapOutput, 'utf-8');
+writeFileSync(
+  join(GENERATED_DIR, 'tab-content-map.ts'),
+  contentMapOutput,
+  'utf-8',
+);
 
 console.log('Generated files:');
 console.log(`  ${join(GENERATED_DIR, 'tab-defs.ts')}`);
@@ -164,4 +287,4 @@ console.log(`  ${join(GENERATED_DIR, 'tab-content-map.ts')}`);
 for (const { id } of files) {
   console.log(`  ${join(GENERATED_DIR, `tab-${id}.ts`)}`);
 }
-console.log(`  Tabs: ${files.map((f) => f.id).join(', ')}`);
+console.log(`  Tabs: ${files.map((file) => file.id).join(', ')}`);

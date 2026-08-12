@@ -3,7 +3,7 @@
 
 import type { ComponentType } from 'react';
 
-import resumeMd from '../content/2. resume.md';
+import resumeMd from '../../.content/public/2. resume.md';
 
 export type TabContent =
   | { type: 'markdown'; content: string }

@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "content:pull": "node scripts/content-pull.mjs",
     "generate": "node scripts/generate-content-index.mjs",
-    "predev": "npm run generate",
-    "prebuild": "npm run generate",
+    "predev": "npm run content:pull && npm run generate",
+    "prebuild": "npm run content:pull && npm run generate",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

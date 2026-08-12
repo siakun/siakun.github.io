@@ -20,6 +20,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/create-github-app-token@v3
+        id: content-token
+        with:
+          app-id: ${{ vars.CONTENT_READER_APP_ID }}
+          private-key: ${{ secrets.CONTENT_READER_APP_KEY }}
+          owner: siakun-private
+          repositories: notes
+
+      - uses: actions/checkout@v4
+        with:
+          repository: siakun-private/notes
+          token: ${{ steps.content-token.outputs.token }}
+          path: .content
+          sparse-checkout: public
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
